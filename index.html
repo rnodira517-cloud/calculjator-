@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="tg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>Ҳисобкунаки қарз - мобилӣ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: linear-gradient(145deg, #e0eafc 0%, #cfdef3 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            padding: 12px;
+            min-height: 100vh;
+        }
+
+        /* Контейнери асосӣ */
+        .app-container {
+            max-width: 550px;
+            margin: 0 auto;
+        }
+
+        /* Сарлавҳа */
+        .header {
+            background: #1e2f4e;
+            color: white;
+            padding: 20px 16px;
+            border-radius: 28px 28px 20px 20px;
+            text-align: center;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+        }
+
+        .header p {
+            font-size: 0.8rem;
+            opacity: 0.85;
+            margin-top: 6px;
+        }
+
+        /* Карточкаҳо */
+        .card {
+            background: rgba(255, 255, 255, 0.97);
+            border-radius: 28px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .card-title {
+            background: #f1f5f9;
+            padding: 14px 18px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #1e2a3e;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-content {
+            padding: 16px;
+        }
+
+        /* Форма */
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .form-group input, 
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 14px;
+            font-size: 1rem;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 20px;
+            background: white;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .form-group input:focus, 
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #2c5282;
+            box-shadow: 0 0 0 3px rgba(44,82,130,0.15);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 70px;
+        }
+
+        /* Тугмаҳо */
+        .btn {
+            width: 100%;
+            padding: 14px;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: transform 0.05s, background 0.2s;
+            font-family: inherit;
+        }
+
+        .btn:active {
+            transform: scale(0.97);
+        }
+
+        .btn-primary {
+            background: #1e3a5f;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0f2c46;
+        }
+
+        .btn-success {
+            background: #2f6b47;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #1e4f33;
+        }
+
+        .btn-secondary {
+            background: #64748b;
+            color: white;
+            margin-top: 8px;
+        }
+
+        /* Рӯйхати қарзгирандагон (барои мобил скрол) */
+        .borrower-list {
+            max-height: 280px;
+            overflow-y: auto;
+            margin-bottom: 12px;
+            border-radius: 20px;
+        }
+
+        .borrower-item {
+            background: #f8fafc;
+            border-radius: 18px;
+            padding: 12px 14px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .borrower-item:active {
+            background: #e2e8f0;
+            transform: scale(0.98);
+        }
+
+        .borrower-item.selected {
+            border-color: #1e3a5f;
+            background: #e0f2fe;
+        }
+
+        .borrower-name {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #0f172a;
+        }
+
+        .borrower-id {
+            font-size: 0.7rem;
+            color: #475569;
+            margin-top: 4px;
+        }
+
+        .borrower-address {
+            font-size: 0.68rem;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        /* Маълумоти қарзгири интихобшуда */
+        .selected-info {
+            background: #e6f0fa;
+            border-radius: 20px;
+            padding: 12px;
+            margin-bottom: 16px;
+        }
+
+        .selected-label {
+            font-size: 0.7rem;
+            color: #1e4a76;
+            font-weight: 600;
+        }
+
+        .selected-name {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        /* Натиҷа */
+        .result-box {
+            background: #f1f5f9;
+            border-radius: 20px;
+            padding: 14px;
+            margin: 12px 0;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #cbd5e1;
+        }
+
+        .result-row:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            font-weight: 600;
+            color: #334155;
+        }
+
+        .result-value {
+            font-weight: 700;
+            color: #1e3a5f;
+            font-size: 1.1rem;
+        }
+
+        /* Ҷадвали пушида (амортизатсия) */
+        .collapsible {
+            margin-top: 12px;
+            border-radius: 20px;
+            overflow: hidden;
+            background: white;
+            border: 1px solid #e2e8f0;
+        }
+
+        .collapsible-header {
+            background: #e2e8f0;
+            padding: 14px 16px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .collapsible-header:active {
+            background: #cbd5e1;
+        }
+
+        .arrow {
+            font-size: 1.2rem;
+            transition: transform 0.25s;
+        }
+
+        .arrow.up {
+            transform: rotate(180deg);
+        }
+
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s ease-out;
+        }
+
+        .collapsible-content.open {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .amort-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.7rem;
+        }
+
+        .amort-table th {
+            background: #1e3a5f;
+            color: white;
+            padding: 10px 4px;
+            position: sticky;
+            top: 0;
+            font-weight: 600;
+        }
+
+        .amort-table td {
+            padding: 8px 4px;
+            text-align: center;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .empty-msg {
+            text-align: center;
+            padding: 24px;
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+
+        /* Grid барои ду тугма дар қатори қарзгирон */
+        .action-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .action-row .btn {
+            flex: 1;
+            margin-top: 0;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.65rem;
+            color: #4a5568;
+            padding: 16px;
+        }
+
+        /* Барои экранҳои хурд */
+        @media (max-width: 480px) {
+            body {
+                padding: 8px;
+            }
+            .card-content {
+                padding: 14px;
+            }
+            .result-value {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <div class="header">
+        <h1>💰 Ҳисобкунаки қарз</h1>
+        <p>Иловаи қарзгир + ҳисоб + ҷадвали амортизатсия</p>
+    </div>
+
+    <!-- КАРТОЧКАИ ҚАРЗГИРАНДАГОН -->
+    <div class="card">
+        <div class="card-title">
+            <span>👥</span> Қарзгирандагон
+        </div>
+        <div class="card-content">
+            <div class="borrower-list" id="borrowerList">
+                <div class="empty-msg">Ҳанӯз қарзгире нест</div>
+            </div>
+
+            <!-- Формаи иловаи қарзгири нав -->
+            <div style="margin-top: 12px;">
+                <div class="form-group">
+                    <label>Ном</label>
+                    <input type="text" id="newFirstName" placeholder="Масалан: Али">
+                </div>
+                <div class="form-group">
+                    <label>Насаб</label>
+                    <input type="text" id="newLastName" placeholder="Масалан: Каримов">
+                </div>
+                <div class="form-group">
+                    <label>ID / Шаҳодатнома *</label>
+                    <input type="text" id="newId" placeholder="ID-и беназир">
+                </div>
+                <div class="form-group">
+                    <label>Суроға</label>
+                    <textarea id="newAddress" placeholder="Суроғаи пурра..."></textarea>
+                </div>
+                <button class="btn btn-success" id="addBorrowerBtn">➕ Илова кардани қарзгир</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- КАРТОЧКАИ ҲИСОБКУНӢ -->
+    <div class="card">
+        <div class="card-title">
+            <span>🧮</span> Ҳисобкунии қарз
+        </div>
+        <div class="card-content">
+            <!-- Маълумоти қарзгири интихобшуда -->
+            <div class="selected-info" id="selectedInfoCard">
+                <div class="selected-label">ҚАРЗГИРИ ИНТИХОБШУДА</div>
+                <div class="selected-name" id="selectedBorrowerName">--</div>
+                <div style="font-size: 0.7rem; color: #475569;" id="selectedBorrowerId">ID: --</div>
+            </div>
+
+            <!-- Майдонҳои қарз -->
+            <div class="form-group">
+                <label>💰 Маблағи қарз (сомонӣ)</label>
+                <input type="number" id="loanAmount" value="5000" step="100">
+            </div>
+            <div class="form-group">
+                <label>📈 Фоизи солона (%)</label>
+                <input type="number" id="interestRate" value="12" step="0.5">
+            </div>
+            <div class="form-group">
+                <label>📅 Мӯҳлат (моҳ)</label>
+                <input type="number" id="loanMonths" value="24" step="1">
+            </div>
+
+            <button class="btn btn-primary" id="calcLoanBtn">🧮 Ҳисоб кардани қарз</button>
+
+            <!-- Натиҷаҳо -->
+            <div class="result-box">
+                <div class="result-row">
+                    <span class="result-label">Пардохти моҳона:</span>
+                    <span class="result-value" id="monthlyPayment">0 сом.</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Маблағи умумӣ (бофоиз):</span>
+                    <span class="result-value" id="totalPayment">0 сом.</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Фоизи умумӣ:</span>
+                    <span class="result-value" id="totalInterest">0 сом.</span>
+                </div>
+            </div>
+
+            <!-- Ҷадвали пушида -->
+            <div class="collapsible">
+                <div class="collapsible-header" id="collapsibleHeader">
+                    <span>📊 Ҷадвали пардохтҳо</span>
+                    <span class="arrow" id="arrowIcon">▼</span>
+                </div>
+                <div class="collapsible-content" id="collapsibleContent">
+                    <table class="amort-table" id="amortTable">
+                        <thead>
+                            <tr><th>№</th><th>Пардохт</th><th>Фоиз</th><th>Асосӣ</th><th>Боқимонда</th></tr>
+                        </thead>
+                        <tbody id="amortBody">
+                            <tr><td colspan="5" class="empty-msg">Ҳанӯз ҳисоб нашудааст</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        Қарзгирро интихоб кунед → маблағ ва фоизро ворид намоед → Ҳисоб кунед
+    </footer>
+</div>
+
+<script>
+    // Массиви қарзгирандагон
+    let borrowers = [];
+    let selectedBorrowerId = null;
+
+    // DOM элементҳо
+    const borrowerListDiv = document.getElementById('borrowerList');
+    const newFirstName = document.getElementById('newFirstName');
+    const newLastName = document.getElementById('newLastName');
+    const newId = document.getElementById('newId');
+    const newAddress = document.getElementById('newAddress');
+    const addBtn = document.getElementById('addBorrowerBtn');
+    const selectedBorrowerNameSpan = document.getElementById('selectedBorrowerName');
+    const selectedBorrowerIdSpan = document.getElementById('selectedBorrowerId');
+    const loanAmountInput = document.getElementById('loanAmount');
+    const interestRateInput = document.getElementById('interestRate');
+    const loanMonthsInput = document.getElementById('loanMonths');
+    const calcLoanBtn = document.getElementById('calcLoanBtn');
+    const monthlyPaymentSpan = document.getElementById('monthlyPayment');
+    const totalPaymentSpan = document.getElementById('totalPayment');
+    const totalInterestSpan = document.getElementById('totalInterest');
+    const amortBody = document.getElementById('amortBody');
+
+    // Collapsible барои мобил
+    const collapsibleHeader = document.getElementById('collapsibleHeader');
+    const collapsibleContent = document.getElementById('collapsibleContent');
+    const arrowIcon = document.getElementById('arrowIcon');
+    let isOpen = false;
+
+    collapsibleHeader.addEventListener('click', () => {
+        if (isOpen) {
+            collapsibleContent.classList.remove('open');
+            arrowIcon.classList.remove('up');
+            arrowIcon.innerHTML = '▼';
+        } else {
+            collapsibleContent.classList.add('open');
+            arrowIcon.classList.add('up');
+            arrowIcon.innerHTML = '▲';
+        }
+        isOpen = !isOpen;
+    });
+
+    // Намоиши рӯйхати қарзгирон
+    function renderBorrowerList() {
+        if (borrowers.length === 0) {
+            borrowerListDiv.innerHTML = '<div class="empty-msg">➕ Қарзгири нав илова кунед</div>';
+            return;
+        }
+        borrowerListDiv.innerHTML = '';
+        borrowers.forEach(borrower => {
+            const div = document.createElement('div');
+            div.className = 'borrower-item';
+            if (selectedBorrowerId === borrower.id) {
+                div.classList.add('selected');
+            }
+            div.innerHTML = `
+                <div class="borrower-name">${escapeHtml(borrower.firstName)} ${escapeHtml(borrower.lastName)}</div>
+                <div class="borrower-id">🆔 ${escapeHtml(borrower.idNumber)}</div>
+                <div class="borrower-address">📍 ${escapeHtml(borrower.address || 'Суроға нест')}</div>
+            `;
+            div.addEventListener('click', (e) => {
+                e.stopPropagation();
+                selectBorrower(borrower.id);
+            });
+            borrowerListDiv.appendChild(div);
+        });
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    // Интихоби қарзгир
+    function selectBorrower(id) {
+        selectedBorrowerId = id;
+        const borrower = borrowers.find(b => b.id === id);
+        if (borrower) {
+            selectedBorrowerNameSpan.innerText = `${borrower.firstName} ${borrower.lastName}`;
+            selectedBorrowerIdSpan.innerText = `ID: ${borrower.idNumber}`;
+        } else {
+            selectedBorrowerNameSpan.innerText = '--';
+            selectedBorrowerIdSpan.innerText = 'ID: --';
+        }
+        renderBorrowerList();
+        clearLoanResults();
+    }
+
+    function clearLoanResults() {
+        monthlyPaymentSpan.innerText = '0 сом.';
+        totalPaymentSpan.innerText = '0 сом.';
+        totalInterestSpan.innerText = '0 сом.';
+        amortBody.innerHTML = '<tr><td colspan="5" class="empty-msg">Ҳанӯз ҳисоб нашудааст</td></tr>';
+    }
+
+    // Иловаи қарзгири нав
+    function addBorrower() {
+        const firstName = newFirstName.value.trim();
+        const lastName = newLastName.value.trim();
+        const idNumber = newId.value.trim();
+        const address = newAddress.value.trim();
+
+        if (!firstName && !lastName) {
+            alert("Лутфан ҳадди ақал ном ё насабро ворид кунед!");
+            return;
+        }
+        if (!idNumber) {
+            alert("Лутфан ID / Шаҳодатномаро ворид кунед (бояд беназир бошад)!");
+            return;
+        }
+
+        const existing = borrowers.find(b => b.idNumber === idNumber);
+        if (existing) {
+            alert("Ин ID аллакай барои қарзгири дигар сабт шудааст!");
+            return;
+        }
+
+        const newBorrower = {
+            id: Date.now().toString(),
+            firstName: firstName || "Ном",
+            lastName: lastName || "Насаб",
+            idNumber: idNumber,
+            address: address || "Суроға сабт нашудааст"
+        };
+
+        borrowers.push(newBorrower);
+        newFirstName.value = '';
+        newLastName.value = '';
+        newId.value = '';
+        newAddress.value = '';
+
+        renderBorrowerList();
+        selectBorrower(newBorrower.id);
+        alert(`✅ Қарзгир ${newBorrower.firstName} ${newBorrower.lastName} илова шуд!`);
+        
+        // Барои қулайӣ, ба болои рӯйхат скрол кардан (дар мобил)
+        document.querySelector('.borrower-list')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // Ҳисобкунӣ
+    function calculateLoan() {
+        if (!selectedBorrowerId) {
+            alert("Лутфан аввал яке аз қарзгиронро интихоб кунед!");
+            return;
+        }
+
+        let loanAmount = parseFloat(loanAmountInput.value);
+        let annualRate = parseFloat(interestRateInput.value);
+        let months = parseInt(loanMonthsInput.value, 10);
+
+        if (isNaN(loanAmount) || loanAmount <= 0) loanAmount = 0;
+        if (isNaN(annualRate) || annualRate < 0) annualRate = 0;
+        if (isNaN(months) || months <= 0) months = 1;
+
+        let monthlyRate = (annualRate / 100) / 12;
+        let monthlyPayment = 0;
+        let totalPayment = 0;
+        let totalInterest = 0;
+
+        if (loanAmount > 0 && months > 0) {
+            if (monthlyRate === 0) {
+                monthlyPayment = loanAmount / months;
+                totalPayment = loanAmount;
+                totalInterest = 0;
+            } else {
+                const factor = Math.pow(1 + monthlyRate, months);
+                monthlyPayment = (loanAmount * monthlyRate * factor) / (factor - 1);
+                totalPayment = monthlyPayment * months;
+                totalInterest = totalPayment - loanAmount;
+            }
+            monthlyPayment = Math.round(monthlyPayment * 100) / 100;
+            totalPayment = Math.round(totalPayment * 100) / 100;
+            totalInterest = Math.round(totalInterest * 100) / 100;
+        }
+
+        monthlyPaymentSpan.innerText = monthlyPayment.toFixed(2) + " сом.";
+        totalPaymentSpan.innerText = totalPayment.toFixed(2) + " сом.";
+        totalInterestSpan.innerText = totalInterest.toFixed(2) + " сом.";
+
+        generateAmortization(loanAmount, annualRate, months, monthlyPayment);
+        
+        // Агар ҷадвал пушида бошад, барои намоиш автоматик кушода шавад (ихтиёрӣ)
+        if (!isOpen && loanAmount > 0) {
+            collapsibleContent.classList.add('open');
+            arrowIcon.classList.add('up');
+            arrowIcon.innerHTML = '▲';
+            isOpen = true;
+        }
+    }
+
+    function generateAmortization(loanAmount, annualRate, months, monthlyPaymentValue) {
+        amortBody.innerHTML = '';
+        if (loanAmount <= 0 || months <= 0) {
+            amortBody.innerHTML = '<tr><td colspan="5" class="empty-msg">Маблағ ё мӯҳлат дуруст нест</td></tr>';
+            return;
+        }
+
+        let monthlyRate = (annualRate / 100) / 12;
+        let balance = loanAmount;
+
+        if (monthlyRate === 0) {
+            let payment = loanAmount / months;
+            for (let i = 1; i <= months; i++) {
+                let principal = (i === months) ? balance : payment;
+                let interest = 0;
+                balance -= principal;
+                if (balance < 0) balance = 0;
+                const row = `<tr><td style="text-align:center">${i}</td><td>${payment.toFixed(2)}</td><td>0.00</td><td>${principal.toFixed(2)}</td><td>${balance.toFixed(2)}</td></tr>`;
+                amortBody.insertAdjacentHTML('beforeend', row);
+                if (balance <= 0) break;
+            }
+            return;
+        }
+
+        for (let month = 1; month <= months; month++) {
+            let interestPayment = balance * monthlyRate;
+            let principalPayment = monthlyPaymentValue - interestPayment;
+            if (principalPayment > balance) principalPayment = balance;
+            balance -= principalPayment;
+            if (balance < 0) balance = 0;
+            const row = `<tr><td style="text-align:center">${month}</td><td>${monthlyPaymentValue.toFixed(2)}</td><td>${interestPayment.toFixed(2)}</td><td>${principalPayment.toFixed(2)}</td><td>${balance.toFixed(2)}</td></tr>`;
+            amortBody.insertAdjacentHTML('beforeend', row);
+            if (balance <= 0.001) break;
+        }
+    }
+
+    // Намунаҳои демо барои мобил
+    function loadDemoBorrowers() {
+        borrowers.push({
+            id: "demo1",
+            firstName: "Рустам",
+            lastName: "Содиқов",
+            idNumber: "TJ1234567",
+            address: "Душанбе, кӯчаи Айнӣ 15"
+        });
+        borrowers.push({
+            id: "demo2",
+            firstName: "Фарзона",
+            lastName: "Раҳимова",
+            idNumber: "TJ7654321",
+            address: "Хуҷанд, хиёбони Сомонӣ 8"
+        });
+        renderBorrowerList();
+        selectBorrower("demo1");
+    }
+
+    // Рӯйдодҳо
+    addBtn.addEventListener('click', addBorrower);
+    calcLoanBtn.addEventListener('click', calculateLoan);
+    
+    // Лавҳаи демо (барои шурӯъи кор)
+    loadDemoBorrowers();
+
+    // Барои қулайии воридот дар мобил – Enter дар майдонҳои асосӣ
+    const inputs = [loanAmountInput, interestRateInput, loanMonthsInput];
+    inputs.forEach(inp => {
+        inp.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') calculateLoan();
+        });
+    });
+</script>
+</body>
+</html>
